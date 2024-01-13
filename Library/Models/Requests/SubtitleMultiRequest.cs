@@ -3,7 +3,6 @@
 public class SubtitleMultiRequest
 {
     public ushort SeasonNumber { get; set; } = 1;
-    public ushort EpisodeList { get; set; } = 1;
-    [JsonPropertyName("query")]
-    public string Query { get; set; }
+    public IEnumerable<ushort> EpisodeList { get; set; } = Enumerable.Empty<ushort>();
+    public string Query { get; set; } = string.Empty;
 }

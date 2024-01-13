@@ -1,44 +1,51 @@
-﻿using System.Collections.Specialized;
-using System.Reflection;
-using System.Web;
-
-namespace Library.Service;
+﻿namespace Library.Service;
 
 public static class Helpers
 {
-    public static string ConvertToQueryString(object requestObject)
+    public static string CreateQueryString(object obj)
     {
-        var query = HttpUtility.ParseQueryString(string.Empty);
+        var properties = obj.GetType().GetProperties();
+        var queryString = new StringBuilder();
 
-        AddToQueryString(query, requestObject);
-
-        return query.ToString();
-    }
-
-    private static void AddToQueryString(NameValueCollection query, object value)
-    {
-        if (value is null) return;
-
-        var keyName = string.Empty;
-
-        var propertyInfo = value.GetType().GetProperty("JsonPropertyName");
-        var jsonPropertyAttribute = propertyInfo?.GetCustomAttribute<JsonPropertyNameAttribute>();
-        if (jsonPropertyAttribute != null)
-        {
-            keyName = jsonPropertyAttribute.Name;
-        }
-
-        if (value is string or int or decimal or bool)
-        {
-            query.Add(keyName, value.ToString());
-            return;
-        }
-
-        var properties = value.GetType().GetProperties();
         foreach (var property in properties)
         {
-            var propertyValue = property.GetValue(value);
-            AddToQueryString(query, propertyValue);
+            var attributeName = (JsonPropertyNameAttribute) Attribute.GetCustomAttribute(property, typeof(JsonPropertyNameAttribute));
+
+            var key = attributeName?.Name ?? property.Name;
+            var value = property.GetValue(obj)?.ToString();
+
+            if (value != null)
+            {
+                queryString.Append($"{key}={value}&");
+            }
+        }
+
+        if (queryString.Length > 0)
+            queryString.Length--; // Remove the last character
+
+        return queryString.ToString();
+    }
+
+    public static async Task<bool> Download(string? fileName, string path, string fileUrl)
+    {
+        try
+        {
+            Directory.CreateDirectory(path);
+
+            fileName ??= fileUrl.Split('/').LastOrDefault();
+
+            using var client = new HttpClient();
+            using var response = await client.GetAsync(fileUrl);
+            await using var responseStream = await response.Content.ReadAsStreamAsync();
+
+            await using var fileStream = new FileStream(Path.Combine(path, fileName), FileMode.Create);
+            await responseStream.CopyToAsync(fileStream);
+
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
         }
     }
 }
