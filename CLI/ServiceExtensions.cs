@@ -14,6 +14,7 @@ public static class ServiceExtensions
 
         return services;
     }
+
     public static CoconaApp AddCommands(this CoconaApp app)
     {
         app.AddCommand("bulk", async (IOpenSubtitlesWrapper openSubtitlesWrapper, [Option] string token, [Option] string name, [Option] ushort season, [Option] string range, [Option] string? path, [Option] string? language = "en") =>
