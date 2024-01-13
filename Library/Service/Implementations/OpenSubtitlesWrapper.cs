@@ -1,6 +1,4 @@
-﻿using System.Runtime.InteropServices;
-
-namespace Library.Service.Implementations;
+﻿namespace Library.Service.Implementations;
 
 public class OpenSubtitlesWrapper(IHttpClientFactory httpClientFactory) : IOpenSubtitlesWrapper
 {

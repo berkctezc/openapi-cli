@@ -1,3 +1,4 @@
+global using CLI;
 global using Cocona;
 global using Library;
 global using Library.Models.Requests;
