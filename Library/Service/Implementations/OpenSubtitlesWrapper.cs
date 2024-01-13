@@ -102,7 +102,7 @@ public class OpenSubtitlesWrapper(IHttpClientFactory httpClientFactory) : IOpenS
             var seasonStr = dto.Season >= 10 ? dto.Season.ToString() : $"0{dto.Season}";
             var epStr = dto.Season >= 10 ? dto.Season.ToString() : $"0{dto.Episode}";
 
-            var fileName = $"{dto.Name}.S{seasonStr}.E{epStr}";
+            var fileName = $"{dto.Name}.S{seasonStr}E{epStr}";
 
             var downloadReq = new DownloadRequest
             {
